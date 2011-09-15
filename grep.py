@@ -24,12 +24,8 @@ def recursive_glob(path_pattern):
 def get_matches(path, regex, is_match):
     """Return list of (line number, lines) matching compile regular expression <regex> and matching 
         function <is_match> for lines in file named <path>"""
-    matches = []
     with open(path, 'rt') as f:
-        for j, line in enumerate(f.readline()):
-            if is_match(line):
-                matches.append((j,line))
-    return matches
+        return [(j,line) for (j,line) in enumerate(f.readline()) if is_match(line)]
     
 def show_matches(path_list, text_pattern, re_options, names_only, invert_match):
     """Show matches of regular expression given by <text_pattern> and regex options <re_options>
