@@ -1,7 +1,9 @@
 """
-    Improved grep 
-        - Use python regex's
-        - Apply file masks in recursion
+    A grep that behaves the way that I want (which may not be to everyone's liking)
+    
+    "Improvements" over regular grep:
+        - Uses python regex's
+        - Applies file masks in recursion
         
     NOTE: Not fully featured
 """
@@ -11,7 +13,7 @@ import os
 import re
 
 def recursive_glob(path_pattern):
-    """Like glob except recursese through subdirectories"""
+    """Like glob except recurse through subdirectories"""
     dir_name, mask = os.path.split(path_pattern)
     path_list = []
     for root, dirs, files in os.walk(dir_name):
@@ -19,11 +21,9 @@ def recursive_glob(path_pattern):
             path_list.append(os.path.join(root, f))
     return path_list
 
-#def get_lines(path):
-#    """Return the contents of file <path> as lines of text"""
-#    return = [line.strip() for line in file(path, 'rb').readlines()]
-
 def get_matches(path, regex, is_match):
+    """Return list of (line number, lines) matching compile regular expression <regex> and matching 
+        function <is_match> for lines in file named <path>"""
     matches = []
     with open(path, 'rt') as f:
         for j, line in enumerate(f.readline()):
@@ -32,6 +32,9 @@ def get_matches(path, regex, is_match):
     return matches
     
 def show_matches(path_list, text_pattern, re_options, invert_match):
+    """Show matches of regular expression given by <text_pattern> and regex options <re_options>
+        in files with names in <path_list>. If <invert_match> then show files that don't match."""
+        
     regex = re.compile(text_pattern, re_options)
     
     if invert_match:
@@ -49,6 +52,8 @@ def show_matches(path_list, text_pattern, re_options, invert_match):
                     for j, line in matches:
                         print '%9d: %s' % (j, line)    
      
+_VERBOSE = True
+     
 if __name__ == '__main__':
     import sys
     import optparse
@@ -57,7 +62,7 @@ if __name__ == '__main__':
     parser.add_option('-i', '--ignore-case', action='store_true', dest='ignore_case', default=False, help='case-insensitive match')
     parser.add_option('-r', '--recursive', action='store_true', dest='recursive', default=False, help='recurse through sub-directories')
     parser.add_option('-l', '--names-only', action='store_true', dest='names_only', default=False, help='show file names only')
-    parser.add_option('-y', '--invert-match', action='store_true', dest='invert_match', default=False, help='show not matches')
+    parser.add_option('-y', '--invert-match', action='store_true', dest='invert_match', default=False, help='show files/lines that do not match')
     (options, args) = parser.parse_args()
 
     if len(args) < 2:
@@ -72,10 +77,11 @@ if __name__ == '__main__':
     re_options = 0
     if  options.ignore_case:
         re_options |= re.IGNORECASE
-        
-    print 'text_pattern:', text_pattern
-    print 'path_pattern:', path_pattern
-    print 're_options:', re_options
+    
+    if _VERBOSE:
+        print 'text_pattern:', text_pattern
+        print 'path_pattern:', path_pattern
+        print 're_options:', re_options
     
     if options.recursive:
         path_list = recursive_glob(path_pattern) 
