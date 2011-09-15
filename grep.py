@@ -31,9 +31,11 @@ def get_matches(path, regex, is_match):
                 matches.append((j,line))
     return matches
     
-def show_matches(path_list, text_pattern, re_options, invert_match):
+def show_matches(path_list, text_pattern, re_options, names_only, invert_match):
     """Show matches of regular expression given by <text_pattern> and regex options <re_options>
-        in files with names in <path_list>. If <invert_match> then show files that don't match."""
+        in files with names in <path_list>. 
+        If <names_only> then only show file names and not linea
+        If <invert_match> then show files that don't match."""
         
     regex = re.compile(text_pattern, re_options)
     
@@ -48,7 +50,7 @@ def show_matches(path_list, text_pattern, re_options, invert_match):
         matches = get_matches(path, regex, is_match)
         if matches:
             print '%3d: %s' % (i,path)
-                if not options.names_only:
+                if not names_only:
                     for j, line in matches:
                         print '%9d: %s' % (j, line)    
      
@@ -82,11 +84,13 @@ if __name__ == '__main__':
         print 'text_pattern:', text_pattern
         print 'path_pattern:', path_pattern
         print 're_options:', re_options
+        print 'names_only:', options.names_only
+        print 'invert match:', option.invert_match
     
     if options.recursive:
         path_list = recursive_glob(path_pattern) 
     else:
         path_list = glob.glob(path_pattern)
 
-    show_matches(path_list, text_pattern, re_options, options.invert_match)
+    show_matches(path_list, text_pattern, re_options, options.names_only, options.invert_match)
  
