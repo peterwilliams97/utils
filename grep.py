@@ -19,54 +19,71 @@ def _recursive_glob(path_pattern):
         for filename in fnmatch.filter(files, mask):
             yield(os.path.join(root,filename))
 
+def _get_matches_on_file(f, is_match):
+    for j, line in enumerate(f):
+        if is_match(line):
+            #print '++', j, line
+            yield j, line.rstrip('\n')
+
 def _get_matches(path, is_match):
     """Return list of (line number, lines) matching function <is_match> for lines in 
         file named <path>.
     """
     # Implementation asssumes open() is implemented as a generator of lines
     with open(path, 'rb') as f:
-        for j, line in enumerate(f):
-            if is_match(line):
-                yield j, line.rstrip('\n')
+        for j, line in _get_matches_on_file(f, is_match):
+            #print '>>', j, line
+            yield j, line
 
-def show_matches(text_pattern, path_pattern, re_options, recursive, names_only, invert_match):
+def show_matches(text_pattern, path_pattern, re_options, recursive, names_only, counts, invert_match):
     """Show matches of regular expression given by <text_pattern> and regex options <re_options>
         in files matched by <path_pattern>.
         If <recursive> then recurse search through sub-directories.
         If <names_only> then only show file names and not lines.
         If <invert_match> then show files that don't match.
     """
-    path_list = _recursive_glob(path_pattern) if recursive else glob.glob(path_pattern)
     regex = re.compile(text_pattern, re_options)
     is_match = lambda x: (regex.search(x) is not None) != invert_match
+    
+    if not path_pattern:
+        for j, line in _get_matches_on_file(sys.stdin, is_match):
+            print '%s' % (line) 
+    else:
+   
+        path_list = _recursive_glob(path_pattern) if recursive else glob.glob(path_pattern)
 
-    for path in path_list:
-        if names_only:
-            if any(_get_matches(path, is_match)):
-                print path
-        else:
-            for j, line in _get_matches(path, is_match):
-                print '%s:%d:%s' % (path, j, line) 
+        for path in path_list:
+            if names_only:
+                if any(_get_matches(path, is_match)):
+                    print path
+            elif counts:
+                print '%s:%d' % (path, len(_get_matches(path, is_match)))     
+            else:
+                for j, line in _get_matches(path, is_match):
+                    print '%s:%d:%s' % (path, j, line) 
 
 if __name__ == '__main__':
     import sys
     import optparse
 
-    parser = optparse.OptionParser('python ' + sys.argv[0] + ' [options] <text pattern> <file pattern>')
+    parser = optparse.OptionParser('python ' + sys.argv[0] + ' [options] <text pattern> [<file pattern>]')
     parser.add_option('-i', '--ignore-case', action='store_true', dest='ignore_case', default=False, help='case-insensitive match')
     parser.add_option('-r', '--recursive', action='store_true', dest='recursive', default=False, help='recurse through sub-directories')
-    parser.add_option('-l', '--names-only', action='store_true', dest='names_only', default=False, help='show file names only')
-    parser.add_option('-y', '--invert-match', action='store_true', dest='invert_match', default=False, help='show files/lines that do not match')
+    parser.add_option('-l', '--names-only', action='store_true', dest='names_only', default=False, help='print file names only')
+    parser.add_option('-c', '--count', action='store_true', dest='counts', default=False, help='print only a count of matching lines per FILE')
+    parser.add_option('-v', '--invert-match', action='store_true', dest='invert_match', default=False, help='print files/lines that do not match')
     (options, args) = parser.parse_args()
 
-    if len(args) < 2:
+    if len(args) < 1:
         print parser.usage
         print '--help for more information'
         exit()
+        
+    path_patttern = args[1] if len(args) >= 2 else None    
 
     # re_options is built from command line flags
     re_options = 0
     if options.ignore_case:
         re_options |= re.IGNORECASE
 
-    show_matches(args[0], args[1], re_options, options.recursive, options.names_only, options.invert_match)
+    show_matches(args[0], path_patttern, re_options, options.recursive, options.names_only, options.counts, options.invert_match)
