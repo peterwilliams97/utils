@@ -51,7 +51,7 @@ def show_matches(text_pattern, path_pattern, re_options, recursive, names_only, 
 
     if not path_pattern: 
         # stdin case
-        for j, line in _get_matches_for_file(sys.stdin, is_match):
+        for _, line in _get_matches_for_file(sys.stdin, is_match):
             print line 
 
     else:  
