@@ -14,7 +14,7 @@ import re
 
 def _recursive_glob(path_pattern):
     """Like glob() except recurses through subdirectories"""
-    dir_name,cmask = os.path.split(path_pattern)
+    dir_name, mask = os.path.split(path_pattern)
     for root, dirs, files in os.walk(dir_name):
         for filename in fnmatch.filter(files, mask):
             yield(os.path.join(root,filename))
