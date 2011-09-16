@@ -42,7 +42,8 @@ def show_matches(text_pattern, path_pattern, re_options, recursive, names_only, 
         in files matched by <path_pattern>.
         If not <path_pattern> then read from stdin. 
         If <recursive> then recurse search through sub-directories.
-        If <names_only> then only show file names and not lines.
+        If <names_only> then show only file names and not lines.
+        If <counts> then show file names and line counts.
         If <invert_match> then show files that don't match.
     """
     regex = re.compile(text_pattern, re_options)
