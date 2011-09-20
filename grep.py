@@ -22,17 +22,17 @@ def _recursive_glob(path_pattern):
 
 def _get_matches_for_file(f, is_match):
     """Return list of (line number, lines) matching function <is_match> for lines in 
-        file <f>.
+        file <f>. Line numbers are 1-offset.
     """
+    # Implementation asssumes file object is implemented as a generator of lines
     for j, line in enumerate(f):
         if is_match(line):
-            yield j, line.rstrip('\n')
+            yield j+1, line.rstrip('\n')
 
 def _get_matches_for_path(path, is_match):
     """Return list of (line number, lines) matching function <is_match> for lines in 
         file named <path>.
     """
-    # Implementation asssumes open() is implemented as a generator of lines
     with open(path, 'rb') as f:
         for j, line in _get_matches_for_file(f, is_match):
              yield j, line
