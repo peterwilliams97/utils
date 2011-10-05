@@ -27,7 +27,7 @@ def _get_matches_for_file(f, is_match):
     # Implementation asssumes file object is implemented as a generator of lines
     for j, line in enumerate(f):
         if is_match(line):
-            yield j+1, line.rstrip('\n')
+            yield j+1, line.rstrip('\n').rstrip('\r')
 
 def _get_matches_for_path(path, is_match):
     """Return list of (line number, lines) matching function <is_match> for lines in 
