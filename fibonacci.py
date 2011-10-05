@@ -22,9 +22,9 @@ _B = (1.0 - _S)/2.0
 
 def fibonacci(n):
     """The way a Python programmer calculates the nth Fibonacci number. 
-        Following http://bit.ly/qcn467
+        Following http://bit.ly/n3netk
     """
-    return round((_A ** n - _B ** n)/_S);
+    return round((_A ** n - _B ** n)/_S)
 
 def fib2(n):
     """The way a node.js programmer calculates the nth Fibonacci number. 
