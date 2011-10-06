@@ -21,8 +21,9 @@ _A = (1.0 + _S)/2.0
 _B = (1.0 - _S)/2.0
 
 def fibonacci(n):
-    """The way a Python programmer calculates the nth Fibonacci number. 
-        Following http://bit.ly/n3netk
+    """The way I would expect a Python programmer calculates the nth Fibonacci number, 
+        following http://bit.ly/n3netk  This assumes the programmer took an undergraduate 
+        math degree and stayed awake during the interesting bits.
     """
     return round((_A ** n - _B ** n)/_S)
 
