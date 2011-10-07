@@ -15,9 +15,51 @@ from __future__ import division
     may replace "Python programmer" with anyone inclined to think through the underlying 
     math rather than rely on the framework they are using to do all the work. 
 """
- 
+import math
+
+# Golden ratio constants
+_S = math.sqrt(5.0)
+_A = (1.0 + _S)/2.0
+_B = (1.0 - _S)/2.0
+
+def _fibonacci_golden(n):
+    """The way I would expect a Python programmer to precalculate the low Fibonacci 
+        numbers. Follows http://bit.ly/n3netk  Assumes the programmer took an 
+        undergraduate math degree and stayed awake during the bits relevant to this 
+        calculation. 
+        Will only work for n up to which floating point is accurate enough. See 
+        _GOLDEN_LIMIT below.
+    """
+    return int(round((_A ** n - _B ** n)/_S))
+
+# Highest number where floating point accuracy gives correct answer.
+# Calculated in _find_breaking_point() below. 
+_GOLDEN_LIMIT = 70 
+
+def _find_breaking_point():
+    """Find the highest n for which _fibonacci_golden(n) is accurate.
+        Used to calculate _GOLDEN_LIMIT
+    """
+    v2 = 0
+    v1 = 1
+    for i in range(2, 10**6):
+        v0 = _fibonacci_golden(i)
+        if v0 != v1 + v2:
+            print 'Breaking point at i=%d' % i
+            print '   v0=%d' % v0
+            print 'v1+v2=%d' % (v1+v2)
+            print '   v1=%d' % v1
+            print '   v2=%d' % v2
+            print ' diff=%g' % ((v0-v1-v2)/v0)
+            break
+        else:
+            assert(_GOLDEN_LIMIT >= i)
+        v2 = v1
+        v1 = v0  
+
 # _fibonacci_numbers is the cache: _fibonacci_numbers[i] = ith Fibonacci number 
-_fibonacci_numbers = [0, 1]
+# Precalcuate the numbers for which the golden mean method works
+_fibonacci_numbers = [_fibonacci_golden(i) for i in range(_GOLDEN_LIMIT)]
 
 def fibonacci(n):
     """Return the nth Fibonacci number where 0th = 0, 1st = 1 etc
