@@ -22,14 +22,14 @@ _fibonacci_numbers = [0, 1]
 def fibonacci(n):
     """Return the nth Fibonacci number where 0th = 0, 1st = 1 etc
         This is the way I would expect a Python programmer to calculate the nth Fibonacci 
-        number with a simple cache and some precalculation.
+        number with a simple cache.
     """
     # nth Fibonacci number is _fibonacci_numbers[n] so extend _fibonacci_numbers to 
     # length n+1 by the defining recurrence if necessary.
     global _fibonacci_numbers
     for i in range(len(_fibonacci_numbers), n+1):
         _fibonacci_numbers.append(_fibonacci_numbers[-1] + _fibonacci_numbers[-2])
-    
+
     return _fibonacci_numbers[n] 
 
 def fib2(n):
